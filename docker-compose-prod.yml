@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=Freedev2020@mysql
+      - MYSQL_DATABASE=resi_db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=Freedev2020@mysql
+    volumes:
+      - ./production_mode/mysql/data:/var/lib/mysql #Mount database data
+      - ./production_mode/mysql/conf/my.cnf:/etc/mysql/my.cnf  #Mount profile
+      - ./production_mode/mysql/init:/docker-entrypoint-initdb.d/ #mount data to initialize SQL script
+    ports:
+      - "3306:3306"
+    env_file: .env
+    restart: always
+
+  web:
+    image: "${WEB_IMAGE}"
+    expose:
+      - "8000"
+    volumes:
+      - ./tmp/logs:/usr/src/resiapi/tmp
+      - ./media:/usr/src/resiapi/media
+      - ./media/client/image:/usr/src/resiapi/media/client/image
+      - ./media/proprio/profile:/usr/src/resiapi/media/proprio/profile
+    command: sh -c "sleep 40s ; gunicorn Resi_mysql.wsgi:application -c gunicorn.conf"
+    links:
+      - db
+    depends_on:
+      - db
+    env_file: .env  
+    restart: always
+
+  nginx:
+    image: "${NGINX_IMAGE}"
+    ports:
+      - "80:80"
+      # - "443:443"
+    expose:
+      - "8000"
+    volumes:
+      - ./static:/usr/share/nginx/html/static # mount static files
+    links:
+      - web
+    depends_on:
+      - web
+    restart: always

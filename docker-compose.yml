@@ -1,67 +1,37 @@
-# version: "3"
-   
-# services:
-#   db:
-#     image: mysql
-#     volumes:
-#       - ./db_data_resi:/var/lib/mysql
-#     restart: always  
-#     environment:
-#       MYSQL_ROOT_PASSWORD: Freedev2020@mysql
-#       MYSQL_DATABASE: resi_db
-#       MYSQL_USER: django
-#   web:
-#     build: .
-#     command: gunicorn Resi_mysql.wsgi:application
-#     volumes:
-#       - .:/code
-#     ports:
-#       - "8000:8000"
-#     depends_on:
-#       - db
-
 version: "3"
 
 services:
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_DATABASE: resi_db # database name
-      MYSQL_ROOT_PASSWORD: Freedev2020@mysql # database password
-    volumes:
-      - ./production_mode/mysql/data/:/var/lib/mysql #Mount database data
-      - ./production_mode/mysql/conf/my.cnf:/etc/mysql/my.cnf  #Mount profile
-      - ./production_mode/mysql/init/:/docker-entrypoint-initdb.d/ #mount data to initialize SQL script
-    ports:
-      - "3307:3306"
-    restart: always
-
   web:
-    build: .
+    build:
+      context: ./resiapi
+      cache_from:
+        - "${WEB_IMAGE}"
+    image: "${WEB_IMAGE}"
+    command: gunicorn Resi_mysql.wsgi:application -c gunicorn.conf    
+    volumes:
+      - ./tmp/logs:/usr/src/resiapi/tmp
+      - ./media:/usr/src/resiapi/media
+      - ./media/client/image:/usr/src/resiapi/media/client/image
+      - ./media/proprio/profile:/usr/src/resiapi/media/proprio/profile
     expose:
       - "8000"
-    volumes:
-      - .:/code
-      - /tmp/logs:/tmp
-      - /etc/config.json:/etc/config.json
-    command: bash start.sh
-    links:
-      - db
-    depends_on:
-      - db
-    restart: always
-
+    env_file: .env
+    
   nginx:
-    build: production_mode/nginx
+    build: 
+      context: ./production_mode/nginx
+      cache_from:
+        - "${NGINX_IMAGE}"
+    image: "${NGINX_IMAGE}"
     ports:
       - "80:80"
-      - "443:443"
+      # - "443:443"
     expose:
       - "8000"
     volumes:
       - ./static:/usr/share/nginx/html/static # mount static files
     links:
-      - web:web
+      - web
     depends_on:
       - web
     restart: always
