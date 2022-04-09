@@ -7,7 +7,7 @@ services:
       cache_from:
         - "${WEB_IMAGE}"
     image: "${WEB_IMAGE}"
-    command: gunicorn Resi_mysql.wsgi:application -c gunicorn.conf    
+    command: bash start.sh #gunicorn Resi_mysql.wsgi:application -c gunicorn.conf    
     volumes:
       - ./tmp/logs:/usr/src/resiapi/tmp
       - ./media:/usr/src/resiapi/media

@@ -4,10 +4,12 @@ services:
   db:
     image: mysql:5.7
     environment:
-      - MYSQL_ROOT_PASSWORD=Freedev2020@mysql
+      - MYSQL_HOST=localhost 
+      - MYSQL_PORT=3306
       - MYSQL_DATABASE=resi_db
-      - MYSQL_USER=root
+      - MYSQL_USER=django-admin
       - MYSQL_PASSWORD=Freedev2020@mysql
+      - MYSQL_ROOT_PASSWORD=Freedev2020@mysql
     volumes:
       - ./production_mode/mysql/data:/var/lib/mysql #Mount database data
       - ./production_mode/mysql/conf/my.cnf:/etc/mysql/my.cnf  #Mount profile
@@ -26,7 +28,7 @@ services:
       - ./media:/usr/src/resiapi/media
       - ./media/client/image:/usr/src/resiapi/media/client/image
       - ./media/proprio/profile:/usr/src/resiapi/media/proprio/profile
-    command: sh -c "sleep 40s ; gunicorn Resi_mysql.wsgi:application -c gunicorn.conf"
+    command: bash start.sh
     links:
       - db
     depends_on:

@@ -20,24 +20,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 #For Developpment mode
 # SECRET_KEY = 'django-insecure-b+v$=ved5bz+%r5$_(96&03o(57!yj&yl7sb0&z&d+-%q4nou*'
-
 # DEBUG = True
-
 # ALLOWED_HOSTS = []
 
-#For production mode
-# import json
-# with open('/etc/config.json') as config_file:
-#     config = json.load(config_file)
 
-SECRET_KEY = SECRET_KEY = 'django-insecure-b+v$=ved5bz+%r5$_(96&03o(57!yj&yl7sb0&z&d+-%q4nou*'
+#For production mode
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
-ALLOWED_HOSTS = ['3.101.153.178', 'localhost']
+ALLOWED_HOSTS = ['54.153.35.243', 'localhost']
+
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -113,11 +109,11 @@ WSGI_APPLICATION = 'Resi_mysql.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME' : 'resi_db',#os.environ.get('SQL_DATABASE'),
-        'USER' : 'django-admin',#os.environ.get('SQL_USER'),
-        'PASSWORD' : 'Freedev2020@mysql',#os.environ.get('SQL_PASSWORD'),
-        'HOST' : 'db',
-        'PORT' : '3306'
+        'NAME' : os.environ.get('SQL_DATABASE'),
+        'USER' : os.environ.get('SQL_USER'),
+        'PASSWORD' : os.environ.get('SQL_PASSWORD'),
+        'HOST' : os.environ.get('SQL_HOST'),
+        'PORT' : os.environ.get('SQL_PORT'),
     }
 }
 
