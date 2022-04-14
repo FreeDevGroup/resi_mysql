@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 #!/usr/bin/env python
 from pathlib import Path
 import os
+from datetime import timedelta
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,20 +22,24 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-
 #For Developpment mode
-# SECRET_KEY = 'django-insecure-b+v$=ved5bz+%r5$_(96&03o(57!yj&yl7sb0&z&d+-%q4nou*'
-# DEBUG = True
-# ALLOWED_HOSTS = []
+SECRET_KEY = 'django-insecure-b+v$=ved5bz+%r5$_(96&03o(57!yj&yl7sb0&z&d+-%q4nou*'
 
+DEBUG = True
+
+ALLOWED_HOSTS = []
 
 #For production mode
-SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = True
-ALLOWED_HOSTS = ['54.153.35.243', 'localhost']
+#import json
+#with open('/etc/config.json') as config_file:
+#    config = json.load(config_file)
 
+#SECRET_KEY = config['SECRET_KEY']
+#DEBUG = False
+#ALLOWED_HOSTS = ['192.168.1.13']
 
 # Application definition
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,29 +47,36 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'rest_framework',
-    'rest_framework.authtoken',
-    'dj_rest_auth',
     'client',
     'proprio',
     'login',
     'django_filters',
     'User',
-    'allauth',
-    'allauth.account',
-    'dj_rest_auth.registration',
 ]
 
 AUTH_USER_MODEL = 'User.CustomUser'
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_FILTER_BACKENDS' : [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=300),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 SWAGGER_SETTINGS = {
@@ -106,27 +119,26 @@ WSGI_APPLICATION = 'Resi_mysql.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 #For production mode
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME' : os.environ.get('SQL_DATABASE'),
-        'USER' : os.environ.get('SQL_USER'),
-        'PASSWORD' : os.environ.get('SQL_PASSWORD'),
-        'HOST' : os.environ.get('SQL_HOST'),
-        'PORT' : os.environ.get('SQL_PORT'),
-    }
-}
-
-#For developpement mode
-# DATABASES = {
+#DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.mysql',
 #        'NAME' : 'resi_db',
 #        'USER' : 'root',
-#        'PASSWORD' : '',
-#        'HOST' : 'localhost',
+#        'PASSWORD' : 'Freedev2020@mysql',
+#        'HOST' : 'db',
 #    }
-# }
+#}
+
+#For developpement mode
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME' : 'resi_db',
+        'USER' : 'root',
+        'PASSWORD' : '',
+        'HOST' : 'localhost',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -178,4 +190,3 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
