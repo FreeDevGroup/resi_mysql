@@ -17,6 +17,7 @@ from xml.dom.minidom import Document
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns 
 from django.conf import settings
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -76,6 +77,7 @@ urlpatterns = [
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
+urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 
 
